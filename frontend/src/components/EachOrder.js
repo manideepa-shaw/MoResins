@@ -2,10 +2,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AuthContext } from '../context/auth-context'
 import LoadingSpinner from './LoadingSpinner'
+import ErrorHandler from './ErrorHandler'
 
 const EachOrder = () => {
   const [orderDetails, setorderDetails] = useState(null)
   const [isLoading, setisLoading] = useState(true)
+  const [error, seterror] = useState(null)
   const auth = useContext(AuthContext)
 
   let orderId = useParams().orderId
@@ -37,7 +39,7 @@ const EachOrder = () => {
       catch(err)
       {
         setisLoading(false);
-        alert(err||'Some problem occured')
+        seterror(err.message || 'Some problem occured')
       }
   
   }
@@ -66,14 +68,19 @@ const EachOrder = () => {
      catch(err)
      {
         setisLoading(false)
-        alert(err.message || 'Couldnot get Places of the user!!!')
+        seterror(err.message || 'Couldnot get Places of the user!!!')
      }
     }
   }, [])
+  const closeError=(e)=>{
+    e.preventDefault()
+    seterror(null)
+  }
 
   return (
     <>
     {isLoading && <LoadingSpinner asOverlay />}
+    {error && <ErrorHandler error={error} closeError={closeError} />}
     <div class="cart">
       {orderDetails!==null && orderDetails.products && orderDetails.products.map((each)=>{
         return (

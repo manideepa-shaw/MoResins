@@ -14,7 +14,6 @@ import { AuthContext } from './context/auth-context';
 import { SearchContext } from './context/search-context';
 
 const Home = lazy(() => import('./components/Home'));
-const About = lazy(() => import('./components/About'));
 // const Wishlist = lazy(() => import('./components/Wishlist'));
 const Cart = lazy(() => import('./components/Cart'));
 
@@ -67,7 +66,6 @@ function App(){
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/orders/:orderId" element={<EachOrder />} />

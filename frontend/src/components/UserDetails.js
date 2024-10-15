@@ -4,9 +4,11 @@ import "../css/Userdetails.css"
 import { AuthContext } from '../context/auth-context'
 import LoadingSpinner from './LoadingSpinner'
 import ConfirmDelete from './ConfirmDelete'
+import ErrorHandler from './ErrorHandler'
 const UserDetails = () => {
     const [firstFunc, setfirstFunc] = useState("show")
     const [secondFunc, setsecondFunc] = useState("hide")
+    const [error, seterror] = useState(null)
     const [isLoading, setisLoading] = useState(true)
     const [confirmDeleteHandler, setconfirmDeleteHandler] = useState(false)
     const [details, setdetails] = useState({})
@@ -32,7 +34,7 @@ const UserDetails = () => {
         catch(err)
         {
           setisLoading(false)
-          alert(err || 'Some error occured')
+          seterror(err.message || 'Some error occured')
         }
         setconfirmDeleteHandler(!confirmDeleteHandler)
     }
@@ -87,7 +89,7 @@ const UserDetails = () => {
     catch(err)
     {
       setisLoading(false);
-      alert(err||'Some problem occured')
+      seterror(err.message||'Some problem occured')
     }
     
     setsecondFunc("hide")
@@ -119,10 +121,15 @@ const UserDetails = () => {
       catch(err)
       {
         setisLoading(false)
-        alert(err.message || 'Couldnot get Places of the user!!!')
+        seterror(err.message || 'Couldnot get Places of the user!!!')
       }
       }
     }, [auth.token])
+
+    const closeError = (e)=>{
+      e.preventDefault()
+      seterror(null)
+    }
 
     if(isLoading || !details || !address)
     {
@@ -130,9 +137,12 @@ const UserDetails = () => {
     }
   return (
     <>
+    {error && <ErrorHandler error={error} closeError={closeError} />}
+
     {confirmDeleteHandler && <ConfirmDelete 
     changeDeleteHandlerState={changeDeleteHandlerState}
     deleteAccount={deleteAccount} />}
+
     <div className='userDetails'>
         <div className={`items desc ${firstFunc}`} style={{width : "40rem",height:"fit-content"}} >
             <label htmlFor="name">Name : </label>{details.name} <br />

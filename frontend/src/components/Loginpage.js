@@ -3,9 +3,11 @@ import i3 from "../images/i3.avif"
 import { AuthContext } from '../context/auth-context'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from './LoadingSpinner'
+import ErrorHandler from './ErrorHandler'
 const Loginpage = () => {
     const auth= useContext(AuthContext)
     const navigate = useNavigate()
+    const [error, seterror] = useState(null)
     const [firstFunc, setfirstFunc] = useState("show")
     const [secondFunc, setsecondFunc] = useState("hide")
     const [isLoading, setisLoading] = useState(false)
@@ -39,7 +41,7 @@ const Loginpage = () => {
         try
             {
                 setisLoading(true)
-                // seterror(null)
+                seterror(null)
                 const res = await fetch(`http://localhost:8000/api/user/signup`, { 
                 method : 'POST',
                 headers : {
@@ -72,7 +74,7 @@ const Loginpage = () => {
         catch(err)
         {
             setisLoading(false)
-            alert(err || 'Some unknown error occured!!!')
+            seterror(err.message || 'Some unknown error occured!!!')
         }
     }
     const login = async(e)=>{
@@ -80,7 +82,7 @@ const Loginpage = () => {
         try
             {
                 setisLoading(true)
-                // seterror(null)
+                seterror(null)
                 const res = await fetch(`http://localhost:8000/api/user/login`, { 
                 method : 'POST',
                 headers : {
@@ -106,7 +108,7 @@ const Loginpage = () => {
         catch(err)
         {
             setisLoading(false)
-            alert(err || 'Some error occurred!!!')
+            seterror(err.message || 'Some error occurred!!!')
         }
     }
     const inputHandlerForSignup=(e)=>{
@@ -124,9 +126,14 @@ const Loginpage = () => {
             [name]:value
         })
     }
+    const closeError = (e)=>{
+        e.preventDefault()
+        seterror(null)
+    }
   return (
     <>
     {isLoading && <LoadingSpinner asOverlay/>}
+    {error && <ErrorHandler error={error} closeError={closeError} />}
     <section className="loginpage">
         <div className="card card1">
         <div className="onehalf displayonbig" >

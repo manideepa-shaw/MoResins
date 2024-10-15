@@ -5,34 +5,30 @@ import { faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { AuthContext } from '../context/auth-context'
 import { NavLink, useNavigate } from 'react-router-dom'
 import LoadingSpinner from './LoadingSpinner'
+import ErrorHandler from './ErrorHandler'
 
 const Cart = () => {
   const auth = useContext(AuthContext)
   const [isLoading, setisLoading] = useState(true)
+  const [error, seterror] = useState(null)
   const navigate = useNavigate()
   const [cartItems, setcartItems] = useState([])
   const removeFromCart=async(e,pid)=>{
     e.preventDefault()
-      // const sure=window.confirm('Are you sure ?')
-      // if(!sure)
-      // {
-      //   return;
-      // }
       try{
         setisLoading(true)
-        // seterror(null)
+        seterror(null)
         const res=await fetch(`${process.env.REACT_APP_BACKEND_URL}cart/${pid}` , { 
             method : 'DELETE',
             headers : { 'Authorization': 'Bearer '+auth.token }
         })
         setcartItems((prevItems) => prevItems.filter((item) => item.products._id !== pid));
         setisLoading(false)
-        // history.push('/'+props.id+'/places')
       }
         catch(err)
         {
           setisLoading(false)
-          alert(err || 'Some error occured')
+          seterror(err.message || 'Some error occured')
         }
       // setshowConfirm(false)
   }
@@ -62,7 +58,7 @@ const Cart = () => {
      catch(err)
      {
         setisLoading(false)
-        alert(err.message || 'Some error occured')
+        seterror(err.message || 'Some error occured')
      }
     }
   }, [auth.token])
@@ -96,7 +92,7 @@ const Cart = () => {
     }
     catch(err)
     {
-      alert(err||'Some problem occured')
+      seterror(err.message||'Some problem occured')
     }
 
   }
@@ -123,7 +119,7 @@ const Cart = () => {
     catch(err)
     {
       setisLoading(false)
-      alert(err || 'Some error occurred')
+      seterror(err.message || 'Some error occurred')
     }
   }
   const placeOrder=async(e)=>{
@@ -149,8 +145,12 @@ const Cart = () => {
     catch(err)
     {
       setisLoading(false)
-      alert(err || 'Some error occurred')
+      seterror(err.message || 'Some error occurred')
     }
+  }
+  const closeError=(e)=>{
+    e.preventDefault()
+    seterror(null)
   }
 
   let totalCost=0
@@ -161,6 +161,7 @@ const Cart = () => {
   {
     return(<>
     {isLoading && <LoadingSpinner asOverlay />}
+    {error && <ErrorHandler error={error} closeError={closeError} />}
     <div className="empty-cart">
       <div className="empty-cart-details">
       Oops!!! No items in the cart.
@@ -172,6 +173,7 @@ const Cart = () => {
     <>
     <div className="cart">
     {isLoading && <LoadingSpinner asOverlay />}
+    {error && <ErrorHandler error={error} closeError={closeError} />}
       {cartItems.map((each)=>{
         return (
           <div className="itemlist">

@@ -77,7 +77,6 @@ route.post('/:pid',async(req,res,next)=>{
     }
     if(already.length>0)
     {
-        console.log(already)
         const error = new Error('Product already Wishlisted')
         error.code=401
         return next(error)
@@ -89,7 +88,7 @@ route.post('/:pid',async(req,res,next)=>{
     const session = await mongoose.startSession()
     try{
         session.startTransaction()
-        createdWishlist.save({ session : session })
+        await createdWishlist.save({ session : session })
         user.wishlist.push(createdWishlist) //this only adds the wishlist ID
         await user.save( { session : session })
         await session.commitTransaction()
@@ -104,7 +103,7 @@ route.post('/:pid',async(req,res,next)=>{
       finally{
         await session.endSession()
       }
-    res.status(200).json({message : "Added to wishlist"})
+    res.status(201).json({message : "Added to wishlist"})
 })
 
 route.delete('/:pid',async(req,res,next)=>{

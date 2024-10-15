@@ -4,14 +4,17 @@ import OrdersInner from './OrdersInner'
 import { NavLink } from 'react-router-dom'
 import { AuthContext } from '../context/auth-context'
 import LoadingSpinner from './LoadingSpinner'
+import ErrorHandler from './ErrorHandler'
 const Orders = () => {
   const auth=useContext(AuthContext)
   const [isLoading, setisLoading] = useState(true)
+  const [error, seterror] = useState(null)
   const [orders, setorders] = useState([])
   useEffect(() => {
     return async() => {
       try{
         setisLoading(true)
+        seterror(null)
         // for finding product details
         const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}order`,{ 
           method : 'GET',
@@ -32,14 +35,19 @@ const Orders = () => {
      catch(err)
      {
         setisLoading(false)
-        alert(err.message || 'Some error occured!!!')
+        seterror(err.message || 'Some error occured!!!')
      }
     }
   }, [auth.token])
+  const closeError = (e)=>{
+    e.preventDefault()
+    seterror(null)
+  }
   
   return (
     <>
     {isLoading && <LoadingSpinner asOverlay />}
+    {error && <ErrorHandler error={error} closeError={closeError} />}
     {/* if noorder is present */}
     {orders && orders.length===0 && 
     <div className="empty-cart">

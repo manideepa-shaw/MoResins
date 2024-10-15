@@ -5,14 +5,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { AuthContext } from '../context/auth-context'
 import LoadingSpinner from './LoadingSpinner'
+import ErrorHandler from './ErrorHandler'
 
 const Eachproduct = () => {
     const productId = useParams().productId
     const [isLoading, setisLoading] = useState(true)
     const [showAddedToCart, setshowAddedToCart] = useState(false)
+    const [showAddedToWishlist, setshowAddedToWishlist] = useState(false)
     const [quantity, setquantity] = useState(1)
     const [isWishlisted, setisWishlisted] = useState(false)
     const [eachItemDetails, seteachItemDetails] = useState({})
+    const [error, seterror] = useState(null)
     const auth = useContext(AuthContext)
 
     useEffect(() => {
@@ -35,7 +38,7 @@ const Eachproduct = () => {
        catch(err)
        {
           setisLoading(false)
-          // seterror(err.message || 'Couldnot get Places of the user!!!')
+          seterror(err.message || 'Some error occured!!!')
        }
       }
     }, [productId])
@@ -43,12 +46,18 @@ const Eachproduct = () => {
       setshowAddedToCart(true)
       setTimeout(() => {
         setshowAddedToCart(false)
-      }, 2000);
+      }, 1500);
+    }
+    const showAddedToWishlistfunc=()=>{
+      setshowAddedToWishlist(true)
+      setTimeout(() => {
+        setshowAddedToWishlist(false)
+      }, 1500);
     }
     const addToCart = async(e)=>{
       e.preventDefault()
       try{
-        // seterror(null)
+        seterror(null)
         const res=await fetch(`${process.env.REACT_APP_BACKEND_URL}cart/`+productId, { 
             method : 'POST',
             headers : {
@@ -65,12 +74,11 @@ const Eachproduct = () => {
           throw Error(responseData.message)
         }
         showAddedToCartfunc();
-        // history.push('/' + auth.userId + '/places')//to redirect to the this page
     }
     catch(err)
     {
         setisLoading(false)
-        alert(err.message || 'Something went wrong. Please try later')
+        seterror(err.message || 'Something went wrong. Please try later')
     }
     }
     const decrement =()=>{
@@ -82,8 +90,7 @@ const Eachproduct = () => {
     const addToWishlist=async(e)=>{
       e.preventDefault()
       try{
-        setisLoading(true)
-        // seterror(null)
+        seterror(null)
         const res=await fetch(`${process.env.REACT_APP_BACKEND_URL}wishlist/`+productId, { 
             method : 'POST',
             headers : {
@@ -96,16 +103,19 @@ const Eachproduct = () => {
         {
             throw Error(responseData.message)
         }
-        setisLoading(false)
-        alert("Added to wishlist")
-        // history.push('/' + auth.userId + '/places')//to redirect to the this page
+        showAddedToWishlistfunc()
     }
     catch(err)
     {
-        setisLoading(false)
-        alert(err.message || 'Something went wrong. Please try later')
+        seterror(err.message || 'Something went wrong. Please try later')
     }
     }
+  
+  const closeError = (e)=>{
+    e.preventDefault()
+    seterror(null)
+  }
+
   if(isLoading){
     return(
       <LoadingSpinner asOverlay/>
@@ -113,7 +123,7 @@ const Eachproduct = () => {
   }
   return (
     <>
-    
+    {error && <ErrorHandler error={error} closeError={closeError} /> }
     {eachItemDetails.image && <Carousel images={eachItemDetails.image}/>}
      
      <div className="product-details">
@@ -147,6 +157,9 @@ const Eachproduct = () => {
      </div>
       {showAddedToCart && <div className="fullpage">
      <div className="added-to-cart">Added to cart Successfully!!!</div>
+     </div>}
+     {showAddedToWishlist && <div className="fullpage">
+     <div className="added-to-cart">Added to wishlist Successfully!!!</div>
      </div>}
     </>
   )
