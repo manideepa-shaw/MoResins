@@ -1,0 +1,13 @@
+.userDetails{
+    display: flex;
+    height: 80vh;
+    justify-content: center;
+    align-items: center;
+}
+.userDetails input{
+    padding: 3px;
+    font-size: 1.9rem;
+    border: none;
+    border-bottom: 1px solid blueviolet !important;
+    background-color: transparent;
+  }

@@ -1,0 +1,20 @@
+.wishlist-remove{
+    display: inline;
+}
+.remove-from-wishlist
+{
+    position: absolute;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: red;
+    color: aliceblue;
+    padding: .5rem;
+    border-radius: 100%;
+}
+.tooltip{
+    position: absolute;
+    margin: 3rem;
+    background-color: rgb(245, 245, 245,.9);
+    padding: .3rem .5rem;
+    border-radius: 0 5px 5px 5px ;
+}

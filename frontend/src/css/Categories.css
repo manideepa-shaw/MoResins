@@ -1,0 +1,9 @@
+.categories{
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+.category{
+    margin: 1rem;
+    width: 25rem;
+}

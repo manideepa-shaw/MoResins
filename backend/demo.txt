@@ -1,0 +1,21 @@
+{
+    "name":"TestUser",
+    "email":"testemail@gmail.com",
+    "password":"Abcd@1234",
+    "mobile":8910694890,
+    "alternatemobile":9874563210,
+    "street":"test",
+    "city":"Kolkata",
+    "state":"WB",
+    "pincode":700082
+}
+
+{
+    "street":"83 Peary Monah",
+    "state":"West Bengal"
+}
+
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzA2Y2M4YTlmNzdkZGNlZWZjM2EwNTAiLCJlbWFpbCI6Im1hbmlkZWVwYXNoYXdAZ21haWwuY29tIiwiaWF0IjoxNzI4NjE3OTExfQ.CZQjN6nA9lUzn41eZ0l8kJg8jA3bSZhcDiYWSsCSPSs
+
+admin:
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmY3NmE2ZjZjYjE5YmE1NWRhMWVmYTAiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTcyODgyNDUzNn0.2468_vgiIi2UbPjsltEYwzyGa9b2IET2JtNmsIlk0Es

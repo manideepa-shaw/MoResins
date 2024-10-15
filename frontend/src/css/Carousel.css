@@ -1,0 +1,109 @@
+.carousel
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50rem;
+    height: 35rem;
+    margin: 2rem;
+    position: relative;
+}
+.slide{
+    width: 100%;
+    height: 100%;
+    border-radius: .5rem;
+    box-shadow: 0 0 7px gray;
+    margin: 1rem;
+}
+.arrow{
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    color: white;
+    background-color: black;
+    padding: .5rem;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 5px #555);
+    font-weight: bolder;
+}
+.arrow:hover,.plusminus:hover
+{
+    cursor: pointer;
+}
+.arrow-left{
+    left: 2rem;
+}
+.arrow-right{
+    right: 2rem;
+}
+.indicators{
+    display: flex;
+    position: absolute;
+    bottom: 1rem;
+}
+.indicator,.indicator-blur{
+    height: .8rem;
+    width: .8rem;
+    border-radius:  100%;
+    border: none;
+    outline: none;
+    margin: 0 .2rem;
+    box-shadow: 0 0 5px black;
+    cursor: pointer;
+}
+.indicator{
+    background-color: white;
+}
+.indicator-blur
+{
+    background-color: rgb(161, 156, 156);
+}
+.final{
+    width: 100vw;
+    justify-content: center;
+    display: flex;
+}
+
+/* styling of description section */
+.product-details{
+    margin: 0 5rem 2rem 5rem;
+    padding: 1rem 3rem;
+    background-color: whitesmoke;
+    border-radius: 10px;
+    box-shadow:  0 0 10px var(--box-shadow);
+}
+.product-name{
+    border-bottom: 1.5px solid var(--main-color);
+    font-size: 3rem;
+    font-family:'Times New Roman', Times, serif;
+    font-weight: 600;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    padding-bottom: 1rem;
+}
+.left{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+.right{
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+.product-desc{
+    padding-top: 2rem;
+    font-size: 2rem;
+    font-family:Arial, Helvetica, sans-serif;
+}
+.addtocart{
+    margin-top: 1rem;
+    font-size: 2rem;
+}
+.addtocart-input{
+    margin: 1rem;
+    font-size: 1.8rem;
+    width: 5rem;
+    text-align: center;
+}
+.addtocart button{
+    margin: 1rem;
+}

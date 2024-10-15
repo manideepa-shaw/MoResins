@@ -1,0 +1,25 @@
+.row{
+    width: 100vw;
+    display: grid;
+    /* grid-column: 10% 20% 20% 20% 10%; */
+}
+.images{
+    /* overflow-x: hidden; */
+    margin-top: 4rem;
+}
+.g1{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+.g2{
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+.g4{
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+.g5{
+    grid-column-start: 4;
+    grid-column-end: 5;
+}

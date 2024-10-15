@@ -1,0 +1,7 @@
+.env
+
+demo.txt
+
+node_modules/
+
+package-lock.json
