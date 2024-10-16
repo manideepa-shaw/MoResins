@@ -18,7 +18,7 @@ const Cart = () => {
       try{
         setisLoading(true)
         seterror(null)
-        const res=await fetch(`${process.env.REACT_APP_BACKEND_URL}cart/${pid}` , { 
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}cart/${pid}` , { 
             method : 'DELETE',
             headers : { 'Authorization': 'Bearer '+auth.token }
         })
@@ -176,7 +176,7 @@ const Cart = () => {
     {error && <ErrorHandler error={error} closeError={closeError} />}
       {cartItems.map((each)=>{
         return (
-          <div className="itemlist">
+          <div className="itemlist" key={each.products._id}>
         <ul className='product-img-name'>
            <NavLink to={`../products/${each.products._id}`}>
                 <li><img src={`${process.env.REACT_APP_BACKEND_URL_IMG}${each.products.image[0]}`} alt="" className='cart-img' /></li>

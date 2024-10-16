@@ -94,7 +94,6 @@ route.post('/:pid',async(req,res,next)=>{
         await session.commitTransaction()
       }
       catch(err){
-        console.log(err)
         await session.abortTransaction();
         const error = new Error('Could not add item to wishlist')
         error.code=500

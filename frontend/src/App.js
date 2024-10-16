@@ -1,4 +1,4 @@
-import React, { Suspense, lazy,useState,useEffect, useCallback, useContext } from 'react';
+import React, { Suspense, lazy,useState,useEffect, useCallback} from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Loginpage from './components/Loginpage';
@@ -11,14 +11,12 @@ import Wishlist from './components/Wishlist';
 import EachOrder from './components/EachOrder';
 import Categories from './components/Categories';
 import { AuthContext } from './context/auth-context';
-import { SearchContext } from './context/search-context';
 
 const Home = lazy(() => import('./components/Home'));
 // const Wishlist = lazy(() => import('./components/Wishlist'));
 const Cart = lazy(() => import('./components/Cart'));
 
 function App(){
-  const auth=useContext(AuthContext)
   const [email, setemail] = useState(null)
   const [userId, setuserId] = useState(null)
   const [token, settoken] = useState(null)

@@ -63,7 +63,7 @@ const Products = () => {
     <div className="container1">
     {items && items.map((each)=>{
         return(
-            <NavLink to={`/products/${each._id}`}  className="items">
+            <NavLink to={`/products/${each._id}`}  className="items" key={each._id}>
             <div>
                 <img src={`${process.env.REACT_APP_BACKEND_URL_IMG}${each.image[0]}`} alt="" srcset="" />
                 <hr />

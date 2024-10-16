@@ -2,10 +2,9 @@ import {React, useContext, useState}from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import "../App.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faHeart,faBagShopping } from '@fortawesome/free-solid-svg-icons'
+import { faHeart,faBagShopping } from '@fortawesome/free-solid-svg-icons'
 import logo from "../images/logo.jpg"
 import { AuthContext } from '../context/auth-context'
-import { SearchContext } from '../context/search-context'
 
 const Navbar = () => {
   const [searchVal, setsearchVal] = useState("")

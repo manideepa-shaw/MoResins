@@ -20,11 +20,11 @@ route.post('/signup',
         minUppercase:1,
         minNumbers:1,
         minSymbols:1
-      }),
+      }).withMessage('Your password should be of minimun length of 8, should contain a capital letter, a small letter, a symbol, a digit'),
     check('mobile').not().isEmpty().isLength({min:10, max:10}).withMessage('Not a valid phone number'),
     check('street').not().isEmpty(),
     check('city').not().isEmpty(),
-    check('pincode').not().isEmpty(),
+    check('pincode').not().isEmpty().isLength({min:6, max:6}).withMessage('Not a valid pincode'),
     check('state').not().isEmpty(),
 ],
 async(req,res,next)=>{
@@ -32,8 +32,7 @@ async(req,res,next)=>{
     const error = validationResult(req)
     if(!error.isEmpty())
     {
-        console.log(error)
-        const err=new Error('Please Check youur data')
+        const err=new Error(error.errors[0].msg)
         err.code=422
         return next(err)
     }
@@ -43,7 +42,6 @@ async(req,res,next)=>{
     let existingUser;
     try{
         existingUser = await User.findOne({ email : email })
-        console.log(existingUser)
     }
     catch(error)
     {
@@ -94,7 +92,6 @@ async(req,res,next)=>{
     }
     catch(error)
     {
-        console.log(error)
         const err=new Error('Signing Up failed! Try again later!')
         err.code=500
         return next(err)
@@ -108,7 +105,6 @@ async(req,res,next)=>{
     }
     catch(error)
     {
-        console.log(error)
         const err=new Error('Signing Up failed! Try again later!')
         err.code=500
         return next(err)
@@ -122,15 +118,14 @@ async(req,res,next)=>{
 
 route.post('/login',
     [
-        check('email').isEmail().not().isEmpty().normalizeEmail(),
-        check('password').not().isEmpty()
+        check('email').isEmail().not().isEmpty().normalizeEmail().withMessage('Not a valid email'),
+        check('password').not().isEmpty().withMessage('Please enter password'),
     ],async(req,res,next)=>{
     // extra lines of codee when using external validator
     const error = validationResult(req)
     if(!error.isEmpty())
     {
-        console.log(error)
-        const err=new Error('Please Check youur data')
+        const err=new Error(error.errors[0].msg)
         err.code=422
         return next(err)
     }
@@ -139,7 +134,6 @@ route.post('/login',
     let existingUser;
     try{
         existingUser = await User.findOne({ email : email })
-        console.log(existingUser)
     }
     catch(error)
     {
@@ -181,7 +175,6 @@ route.post('/login',
         }
         catch(error)
         {
-            console.log(error)
             const err=new Error('Could not log you in! Some error occured')
             err.code=500
             return next(err)
@@ -230,8 +223,7 @@ route.patch('/',
     const error = validationResult(req)
     if(!error.isEmpty())
     {
-        console.log(error)
-        const err=new Error('Please Check youur data')
+        const err=new Error(error.errors[0].msg)
         err.code=422
         return next(err)
     }
@@ -274,7 +266,6 @@ route.patch('/',
         error.code=422
         return next(error)
     }
-    console.log('Updated')
     res.json({message: "User Details edited Successfully",user: updatedUser})
 })
 
@@ -310,7 +301,6 @@ route.delete('/',async(req,res,next)=>{
     catch(err)
     {
         await session.abortTransaction();
-        console.log(err)
         const error = new Error('Some problem occurred while editing')
         error.code=422
         return next(error)

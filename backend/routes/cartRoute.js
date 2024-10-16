@@ -34,13 +34,13 @@ route.get('/',async(req,res,next)=>{
 
 route.post('/:pid',
     [
-        check('quantity').isInt({min:1})
+        check('quantity').isInt({min:1}).withMessage('Quantity should be positive and less than 21')
     ],
     async(req,res,next)=>{
     const error = validationResult(req)
     if(!error.isEmpty())
     {
-        const err=new Error('Please Check youur data')
+        const err=new Error(error.errors[0].msg)
         err.code=422
         return next(err)
     }
@@ -98,13 +98,13 @@ route.post('/:pid',
 
 route.patch('/:pid',
     [
-        check('quantity').isInt({min:1})
+        check('quantity').isInt({min:1}).withMessage('Quantity should be positive and less than 21')
     ],async(req,res,next)=>{
     //
     const error = validationResult(req)
     if(!error.isEmpty())
     {
-        const err=new Error('Please Check youur data')
+        const err=new Error(error.errors[0].msg)
         err.code=422
         return next(err)
     }

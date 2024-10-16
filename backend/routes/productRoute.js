@@ -89,7 +89,7 @@ route.use((req,res,next)=>{
 route.post('/',
     fileUpload.array('image',10), 
     [
-        check('name').not().isEmpty(),
+        check('name').not().isEmpty().withMessage('Enter a valid name'),
         check('price').not().isEmpty().isInt({ min: 1 }).withMessage('Not a price')
     ],
     async(req,res,next)=>{
@@ -97,8 +97,7 @@ route.post('/',
         const error = validationResult(req)
         if(!error.isEmpty())
         {
-            console.log(error)
-            const err=new Error('Please Check youur data')
+            const err=new Error(error.errors[0].msg)
             err.code=422
             return next(err)
         }
@@ -123,7 +122,6 @@ route.post('/',
             await newProduct.save(newProduct)
         }
         catch(err){
-            console.log(err)
             const error = new Error('Could not create a product')
             error.code=500
             return next(error)

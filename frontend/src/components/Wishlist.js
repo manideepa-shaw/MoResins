@@ -5,7 +5,7 @@ import "../css/Wishlist.css"
 import { AuthContext } from '../context/auth-context'
 import LoadingSpinner from './LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCross, faRemove, faRemoveFormat } from '@fortawesome/free-solid-svg-icons'
+import { faRemove} from '@fortawesome/free-solid-svg-icons'
 
 const Wishlist = () => {
   const auth = useContext(AuthContext)
@@ -45,7 +45,7 @@ const Wishlist = () => {
     event.preventDefault();
     try{
       setisLoading(true)
-      const res=await fetch(`${process.env.REACT_APP_BACKEND_URL}wishlist/${productId}`, { 
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}wishlist/${productId}`, { 
           method : 'DELETE',
           headers : { 'Authorization': 'Bearer '+auth.token }
       })
@@ -79,7 +79,7 @@ const Wishlist = () => {
     {items.map((each,idx)=>{
         return(
           <>
-            <NavLink to={`/products/${each.id}`} className="items"  key={each.id}>
+            <NavLink to={`/products/${each.id}`} className="items" key={each.id}>
               <FontAwesomeIcon icon={faRemove} size='2xl' 
               className='remove-from-wishlist' 
               onMouseEnter={()=>setisCrossHovered(idx)} 
