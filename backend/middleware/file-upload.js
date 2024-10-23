@@ -19,7 +19,6 @@ const fileUpload = multer({
         filename: (req, file, cb)=>{
             // cb is a callback function
             const ext = MIME_TYPE_MAP[file.mimetype]
-            console.log("ext"+ext)
             cb(null, uuidv4() + '.' + 'jpg') //this will generate a random file name with right extension
         },
         // to check we donot get inValid inputs

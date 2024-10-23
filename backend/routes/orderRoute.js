@@ -8,10 +8,9 @@ const Cart = require('../models/cart')
 const Order = require('../models/order')
 const mongoose = require('mongoose')
 const checkAuth = require('../middleware/check-auth')
-// const Payment = require('../middleware/payment')
-// const checkStatus = require('../middleware/payment-status')
-// const Stripe = require('stripe');
-// const stripe = Stripe(process.env.SECRET_KEY_STRIPE);
+const {v4 : uuidv4} = require('uuid')
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.SECRET_KEY_STRIPE);
 
 const route=express.Router()
 route.use(checkAuth)
@@ -59,7 +58,7 @@ route.get('/:oid',async(req,res,next)=>{
         error.code=201
         return next(error)
     }
-    if(order.user!=req.userData.userId)
+    if(order.user.toString() !== req.userData.userId)
     {
         const error = new Error('Seems Not to be your Order!!')
         error.code=201
@@ -116,6 +115,7 @@ route.patch('/:oid',async(req,res,next)=>{
 
 route.post('/',async(req,res,next)=>{
     let uid = req.userData.userId
+    const { stripeToken } = req.body
     let foundCart;
     try{
         foundCart = await Cart.find({user : uid}).populate('products')
@@ -163,16 +163,30 @@ route.post('/',async(req,res,next)=>{
     })
     const session = await mongoose.startSession()
     try{
-        session.startTransaction()      
+        session.startTransaction()    
         await newOrder.save({ session : session })
         user.orders.push(newOrder) //this only adds the order ID
         await user.save( { session : session })
         await Cart.deleteMany({user : uid},{session:session})
+        // adding payment
+        const customer =await stripe.customers.create({
+            email: req.userData.userEmail,
+            source: stripeToken
+        })
+        const result=await stripe.charges.create({
+            amount: finalPrice * 100,
+            currency:'inr',
+            customer : customer.id,
+            receipt_email: req.userData.userEmail,
+            description: 'Order Payment'
+        },{idempotencyKey: uuidv4()}//so that we dont charge the user again
+    )
         await session.commitTransaction()
       }
       catch(err){
+        console.log(err)
         await session.abortTransaction();
-        const error = new Error('Order not successful! If amount deducted will be refunded!')
+        const error = new Error(err.message || 'Order not successful! If amount deducted will be refunded!')
         error.code=500
         return next(error)
       }

@@ -6,6 +6,7 @@ import { AuthContext } from '../context/auth-context'
 import { NavLink, useNavigate } from 'react-router-dom'
 import LoadingSpinner from './LoadingSpinner'
 import ErrorHandler from './ErrorHandler'
+import StripeCheckout from "react-stripe-checkout"
 
 const Cart = () => {
   const auth = useContext(AuthContext)
@@ -122,15 +123,19 @@ const Cart = () => {
       seterror(err.message || 'Some error occurred')
     }
   }
-  const placeOrder=async(e)=>{
-    e.preventDefault()
+  const placeOrder=async(token)=>{
+    // e.preventDefault()
     setisLoading(true)
     try{
       const res=await fetch(`${process.env.REACT_APP_BACKEND_URL}order`, { 
         method : 'POST',
         headers : {
-            'Authorization': 'Bearer '+auth.token
-        }
+            'Content-type': 'application/json',
+            'Authorization': 'Bearer '+auth.token,
+        },
+        body: JSON.stringify({
+          stripeToken: token.id // Passing the Stripe token for backend processing
+        })
       })
       const responseData=await res.json()
       if(!res.ok)
@@ -217,9 +222,14 @@ const Cart = () => {
             <div id="totalcost" className="bold">&#8377;{totalCost}</div>
            </div>
            <div id="placeorder">
-            <form onSubmit={placeOrder}>
-                <button type="submit" className="btn" name="placeorder">Place Order</button>
-            </form>
+            {console.log(process.env.REACT_APP_PUBLISHABLE_KEY_STRIPE)}
+            <StripeCheckout stripeKey={process.env.REACT_APP_PUBLISHABLE_KEY_STRIPE} 
+            className="btn"
+            name="Place your order"
+            token={placeOrder}
+            disabled={isLoading} />
+              {/* <button className="btn" name="placeorder">Proceed to payment</button>
+            </StripeCheckout> */}
            </div>
         </div>
     </div>
