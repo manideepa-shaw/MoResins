@@ -28,7 +28,6 @@ const Products = () => {
               throw new Error(responseData.message)
             }
             setitems(responseData.products) //because we have set products as key in backend while sending request
-            console.log(responseData.products)
             setisLoading(false)
   
          }

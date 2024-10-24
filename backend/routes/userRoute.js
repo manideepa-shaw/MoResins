@@ -1,4 +1,7 @@
 const express = require('express')
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const OtpVerification = require('../models/otpverification')
 const User = require('../models/users')
 const Wishlist = require('../models/wishlist')
 const Order = require('../models/order')
@@ -10,6 +13,128 @@ const mongoose = require('mongoose')
 
 const route=express.Router()
 
+const dotenv = require('dotenv');
+dotenv.config();
+
+route.post('/sendotp',    
+    [ check('email').isEmail().not().isEmpty().withMessage('Enter a valid email')],
+    async(req,res,next)=>{
+    // extra lines of codee when using external validator
+    const error = validationResult(req)
+    if(!error.isEmpty())
+    {
+        const err=new Error(error.errors[0].msg)
+        err.code=422
+        return next(err)
+    }
+    //
+    const { email } = req.body;
+
+    if (!email) {
+        const error = new Error('Email is required')
+        error.code=400
+        return next(error)
+    }
+
+// check if the email/ user already exists
+    let existingUser;
+    try{
+        existingUser = await User.findOne({ email : email })
+    }
+    catch(error)
+    {
+        const err=new Error('Cannot send OTP !!!')
+        err.code=500
+        return next(err)
+    }
+    if(existingUser)
+    {
+        const err=new Error('Email already exists! Please login.')
+        err.code=422
+        return next(err)
+    }
+
+    // creating otp
+    const otp = crypto.randomInt(100000, 999999).toString(); // Generate 6-digit OTP
+
+    // Nodemailer setup for sending email
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail', // or another email provider
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASSWORD
+        }
+    });
+
+    const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'MoResins || OTP for Signup',
+        text: `Your OTP is ${otp}. It is valid for 10 minutes.`
+    };
+
+    try {
+        // Check if an OTP already exists for the email and remove it
+        await OtpVerification.findOneAndDelete({ email });
+
+        // Save new OTP in the database
+        const newOtpVerification = new OtpVerification({ email, otp });
+        await newOtpVerification.save();
+
+        // Send the OTP via email
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ message: 'OTP sent to email', email });
+    } catch (error) {
+        // console.log(error)
+        const err = new Error('Error sending OTP')
+        err.code = 500
+        return next(err)
+    }
+})
+route.post('/verifyotp',
+    [ check('email').isEmail().not().isEmpty().withMessage('Enter a valid email'),
+      check('otp').not().isEmpty().withMessage('Enter OTP sent to your email')
+    ],
+    async(req,res,next)=>{
+
+    // extra lines of codee when using external validator
+    const error = validationResult(req)
+    if(!error.isEmpty())
+    {
+        const err=new Error(error.errors[0].msg)
+        err.code=422
+        return next(err)
+    }
+    //
+    const { email, otp } = req.body;
+
+    try {
+        // Find the OTP in the database
+        const otpRecord = await OtpVerification.findOne({ email });
+
+        if (!otpRecord) {
+            const error = new Error('Email not found')
+            error.code=400
+            return next(error)
+        }
+
+        // Compare OTP
+        if (otpRecord.otp.toString() !== otp || Date.now()>otpRecord.expiresAt) {
+            const error = new Error('Invalid OTP or the OTP has expired')
+            error.code=400
+            return next(error)
+        }
+        
+        // OTP is valid, change the verifiedStatus
+        otpRecord.verifiedStatus= true;
+        await otpRecord.save();
+        res.status(200).json({ message: 'OTP verified successfully' });
+    } catch (err) {
+        const error = new Error('Error verifying OTP')
+        error.code=500
+        return next(error)
+    }
+})
 route.post('/signup',
 [
     check('name').not().isEmpty(),
@@ -39,22 +164,24 @@ async(req,res,next)=>{
     //
     
     const {name , email, password, mobile, alternatemobile, street, city, state, pincode, landmark}=req.body
-    let existingUser;
+    let verifiedUser;
     try{
-        existingUser = await User.findOne({ email : email })
+        verifiedUser = await OtpVerification.findOne({email : email})
     }
     catch(error)
     {
+        // console.log(error)
         const err=new Error('Signing Up failed! Try again later!')
         err.code=500
         return next(err)
     }
-    if(existingUser)
+    if(!verifiedUser || !verifiedUser.verifiedStatus)
     {
-        const err=new Error('Email already exists! Please login.')
-        err.code=422
+        const err=new Error('User not verified!')
+        err.code=500
         return next(err)
     }
+
     let hashedPassword ;
     try
     {
@@ -89,6 +216,7 @@ async(req,res,next)=>{
     })
     try{
         await newuser.save(newuser)
+        await OtpVerification.findOneAndDelete({email : email})
     }
     catch(error)
     {
@@ -109,9 +237,6 @@ async(req,res,next)=>{
         err.code=500
         return next(err)
     }
-
-    // res.status(200).json({message:"User Signup successfull",
-    // user: newuser.toObject( { getters:true },'-password' ) })
 
     res.status(200).json({userId: newuser.id, email : newuser.email, token:token})
 })

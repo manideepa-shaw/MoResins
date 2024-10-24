@@ -8,13 +8,16 @@ const Loginpage = () => {
     const auth= useContext(AuthContext)
     const navigate = useNavigate()
     const [error, seterror] = useState(null)
+    const [isOtpSent, setisOtpSent] = useState(false)
+    const [isOtpVerified, setisOtpVerified] = useState(false)
     const [firstFunc, setfirstFunc] = useState("show")
     const [secondFunc, setsecondFunc] = useState("hide")
     const [isLoading, setisLoading] = useState(false)
-    const [disabled, setdisabled] = useState(false)
+    const [disabled, setdisabled] = useState(true)
     const [display, setdisplay] = useState(null)
     const [signUpDetails, setsignUpDetails] = useState({
         email:"",
+        otp:null,
         password:"",
         name:"",
         mobile:"",
@@ -35,6 +38,64 @@ const Loginpage = () => {
         setsecondFunc("hide")
         setfirstFunc("show")
         setdisplay("block")
+    }
+    const sendOtp = async(e)=>{
+        e.preventDefault()
+        try
+        {
+            setisLoading(true)
+            seterror(null)
+            const res = await fetch(`http://localhost:8000/api/user/sendotp`, { 
+            method : 'POST',
+            headers : {
+                'Content-type': 'application/json'
+            },
+            body :JSON.stringify({
+                email : signUpDetails.email
+            })})
+            const responsedata = await res.json()
+            if(!res.ok)
+            {
+                throw new Error(responsedata.message)
+            }
+            setisLoading(false)
+            setisOtpSent(true)
+        }
+        catch(err)
+        {
+            setisLoading(false)
+            seterror(err.message || 'Some unknown error occured!!!')
+        }
+    }
+    const verifyOtp = async(e)=>{
+        e.preventDefault()
+        try
+        {
+            setisLoading(true)
+            seterror(null)
+            const res = await fetch(`http://localhost:8000/api/user/verifyotp`, { 
+            method : 'POST',
+            headers : {
+                'Content-type': 'application/json'
+            },
+            body :JSON.stringify({
+                email : signUpDetails.email,
+                otp : signUpDetails.otp
+            })})
+            const responsedata = await res.json()
+            if(!res.ok)
+            {
+                throw new Error(responsedata.message)
+            }
+            setisLoading(false)
+            setisOtpVerified(true)
+            setdisabled(false)
+        }
+        catch(err)
+        {
+            setisLoading(false)
+            seterror(err.message || 'Some unknown error occured!!!')
+        }
     }
     const signup =async (e)=>{
         e.preventDefault()
@@ -150,17 +211,24 @@ const Loginpage = () => {
                 <div className="signuptoggle" onClick={showhide}>Sign Up</div>
             </form>
 
-            {/* <form className={secondFunc} method="post">
+            <form className={secondFunc} method="post" onSubmit={sendOtp}>
                 <label for="email"><div className="red">*</div>Email</label>
-                <input type="email" name="email" required value={signUpDetails.email} onChange={inputHandlerForSignup} /><br/><br/> */}
-                {/* <button type="submit" className="btn" name="sendotp">Send OTP</button> */}
-            {/* </form>
-                <br/> */}
+                <input type="email" name="email" required 
+                value={signUpDetails.email} 
+                onChange={inputHandlerForSignup}
+                disabled={isOtpVerified} /><br/><br/>
+                <button type="submit" className={`btn ${isOtpSent ? 'hide' : ''}`}
+                disabled={isOtpSent} name="sendotp" >Send OTP</button>
+            </form>
+                <br/>
+            <form className={secondFunc} method="post" onSubmit={verifyOtp}>
+            <label for="otp"><div className="red">*</div>OTP </label>
+            <input type="number" name="otp" required value={signUpDetails.otp} onChange={inputHandlerForSignup} disabled={!isOtpSent} /><br/><br/>
+            <button type="submit" className={`btn ${isOtpVerified || !isOtpSent ? 'hide' : ''}`}
+            disabled={isOtpVerified || !isOtpSent} name="sendotp" >Verify OTP</button>
+            </form>
+                <br/>
             <form className={secondFunc} onSubmit={signup} > <br/>
-                {/* <label for="otp"><div className="red">*</div>Enter OTP</label> */}
-                {/* <input type="number" className="signupinput" name="otp" required disabled={disabled} /> <br/> <br/> */}
-                <label for="email"><div className="red">*</div>Email</label>
-                <input type="email" name="email" required value={signUpDetails.email} onChange={inputHandlerForSignup} /><br/><br/>
                 <label for="name"><div className="red">*</div>Name</label>
                 <input type="text" className="signupinput" name="name" required disabled={disabled} onChange={inputHandlerForSignup} value={signUpDetails.name} /> <br/> <br/>
                 <label for="mobile"><div className="red">*</div>Mobile No.</label>
@@ -171,8 +239,10 @@ const Loginpage = () => {
                 <input type="text" className="signupinput" name="city" required disabled={disabled} value={signUpDetails.city} onChange={inputHandlerForSignup} /> <br/> <br/>
                 <label for="state"><div className="red">*</div>State</label>
                 <input type="text" className="signupinput" name="state" required disabled={disabled} value={signUpDetails.state} onChange={inputHandlerForSignup} /> <br/> <br/>
+                
                 <label for="pincode"><div className="red">*</div>PinCode</label>
                 <input type="number" className="signupinput" name="pincode" required disabled={disabled} value={signUpDetails.pincode} onChange={inputHandlerForSignup} /> <br/> <br/>
+
                 <label for="landmark">Landmark</label>
                 <input type="text" className="signupinput" name="landmark" disabled={disabled} value={signUpDetails.landmark} onChange={inputHandlerForSignup} /> <br/> <br/>
                 <label for="password"><div className="red">*</div>Enter Password</label>

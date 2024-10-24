@@ -129,7 +129,7 @@ const Eachproduct = () => {
      <div className="product-details">
         <div className="product-name">
             <div className="left">{eachItemDetails.name}</div>
-            <div className="right">Price : {eachItemDetails.price}</div>
+            <div className="right">Price : &#8377;{eachItemDetails.price}</div>
         </div>
         <div className="product-desc">
             {eachItemDetails.desc}
