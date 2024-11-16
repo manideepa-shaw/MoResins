@@ -1,0 +1,24 @@
+services:
+  frontend:
+    build: 
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - mern
+    env_file:
+      - ./frontend/.env
+  backend:
+    build: 
+      context: ./backend
+    ports:
+      - "8000:8000"
+    networks:
+      - mern
+    env_file:
+      - ./backend/.env
+
+# to create a network-> this will run sbse pehle
+networks:
+  mern:
+    driver: bridge
